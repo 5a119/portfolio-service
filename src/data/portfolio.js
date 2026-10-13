@@ -5,7 +5,6 @@ export const profile = {
   email: 'snguyen4work@gmail.com',
   github: 'https://github.com/5a119/',
   linkedin: 'https://www.linkedin.com/in/sangoscar99/',
-  resume: `${import.meta.env.BASE_URL}resume.pdf`,
   summary: 'I turn complex requirements into reliable backend services using Java, Spring Boot, and AWS. I bring those systems from design to deployment and keep them running smoothly in production.',
   about: [
     'At Blackhawk Network, I build cloud-native services for order management, from distributed workflows and data storage to caching and AWS infrastructure. I work primarily with Java and Spring Boot, with a focus on reliability, maintainability, and how systems behave in production.',
@@ -106,7 +105,6 @@ export const sections = {
 
 export const actions = {
   talk: 'Let’s talk',
-  resume: 'View Resume',
   email: 'Email Me',
 };
 export const learning = {

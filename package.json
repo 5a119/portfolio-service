@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.js",
+    "resume:upload": "node scripts/upload-resume.mjs"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",

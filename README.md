@@ -1,55 +1,62 @@
-﻿# Sang Nguyen - Portfolio
+# Sang Nguyen — Portfolio
 
-A personal portfolio showcasing Sang Nguyen's software engineering experience, education, selected projects, technical skills, and certifications. Includes a downloadable resume and links to email, GitHub, and LinkedIn.
-
-Built with React, Vite, Tailwind CSS, and Framer Motion. The responsive interface features a dark teal and mint theme, animated sections, and an interactive firefly cursor with a lotus frog mascot. Motion effects respect reduced-motion preferences, and the cursor effects can be paused.
-
-## Run locally
-
-### Prerequisites
-
-- Node.js 22.12 or later, with npm.
-- A local copy of this repository.
-
-From the repository folder:
-
-```sh
-cd portfolio-service
-npm install
-npm run dev
-```
-
-If your terminal is already in `portfolio-service`, skip the `cd` command. Open the local URL printed by Vite, usually `http://localhost:5173`. Changes to source files update the browser automatically. Press `Ctrl+C` to stop the server.
-
-No environment variables, API keys, or backend service are required to run the portfolio.
-
-## Check and build
-
-```sh
-npm run lint
-npm run build
-npm run preview
-```
-
-- `npm run lint` checks the source with Oxlint.
-- `npm run build` creates the production site in `dist/`.
-- `npm run preview` serves the production build locally. Open the URL printed in the terminal, usually `http://localhost:4173`.
-
-## Update content
-
-- `src/data/portfolio.js` contains profile details, navigation, experience, education, projects, skills, and certifications.
-- `src/components/` contains the page sections and interactive elements.
-- `src/index.css` contains the site's styling.
-- `public/` contains the portrait, school logos, mascot artwork, and downloadable resume.
-
-Replace `public/resume.pdf` to update the resume visitors download. Update profile links and content in `src/data/portfolio.js` as needed.
+React and Vite portfolio with a server-backed résumé access flow. The former public résumé links now open a choice: pay a one-time $5 USD charge through Stripe Checkout for instant access, or prepare a free request in the visitor’s default mail app. The form fills the recipient, subject, and message with the visitor’s name and email; the visitor reviews the draft and sends it themselves.
 
 ## Deployment
 
-The default base path is `/`. For hosting under a repository path such as `/portfolio-service/`, build with:
+Deploy the `portfolio-service` Git repository on Vercel with its repository root as the project root. In this workspace the Vite checkout is nested under `repo-review`, but the connected Git repository itself begins at that directory. Vercel serves the Vite build and the `api/` Node.js functions from one origin. The existing payment implementation relies on Vercel Functions, Upstash Redis, and Stripe Checkout. The current email form uses a mailto draft and requires no email service. A static-only host such as GitHub Pages cannot run these API routes.
+
+Create and configure:
+
+1. An Upstash Redis database. The Redis REST endpoint and token are used by the functions for request state, rate limits, one-time verification codes, webhook idempotency, paid access records, and the private PDF blob. The PDF is about 160 KB and stored as base64 in one non-expiring Redis key (`resume:private:pdf:v1`); the upload script refuses files over 2 MB. Keep the Redis token server-side.
+2. A Stripe account and a webhook pointing to `https://YOUR_DOMAIN/api/stripe/webhook`, subscribed to `checkout.session.completed`. Checkout uses a server-created, one-time $5 USD line item. Use test keys and set `STRIPE_LIVE_MODE=false` while testing; change to live keys and `true` only for a live deployment.
+3. The payment environment variables below in Vercel Project Settings. Set `APP_ORIGIN` to the exact public origin (scheme and hostname, no trailing slash).
+
+Copy `.env.example` to `.env` for local scripts and configure real values in your shell or Vercel. Do not commit `.env` or credentials. Use `vercel dev` to exercise the API locally; plain `vite` runs only the frontend.
+
+## Private résumé upload
+
+The current résumé is preserved locally at `private/resume.pdf`, which is ignored by Git. Replace that local file with the desired version, then run `npm run resume:upload` with the Upstash URL and token available in the environment. The script checks the PDF signature and 2 MB limit before overwriting the Redis asset. Uploading a new PDF does not expose it in the Vite build. The download function returns it only after validating the Stripe Checkout session and the initiating browser cookie.
+
+## Access rules and email behavior
+
+- Stripe’s server-created Checkout Session is always a one-time $5 USD payment. Webhook callbacks require Stripe signature verification; fulfillment records are idempotent. The download endpoint independently retrieves and validates the session and line item, so a buyer can access the résumé after returning even if the webhook is delayed.
+- Paid access lasts 30 days in the same browser that started Checkout. A session-specific HttpOnly cookie binds that browser to each Checkout Session, preserving access when multiple tabs start checkout; a session ID in the URL by itself does not authorize access. If the cookie is lost, email `snguyen4work@gmail.com` with the Stripe receipt so the owner can verify the purchase manually.
+- The email request form opens the visitor’s configured mail app with a prefilled draft. It does not verify an address, send mail automatically, or confirm delivery. The entered email is included in the body; the mail app selects the actual sending account. A configured mailto handler is required.
+- Legacy verification API routes remain in the repository, but the current form does not call them. Resend and verification secrets are only needed if those routes are reactivated.
+- Request records expire after 30 days. Initial checkout bindings can remain for up to 90 days, but never extend the 30-day access window measured from payment; successful downloads shorten the active binding to the remaining access period. Verification throttle keys expire automatically. The private PDF blob has no TTL and remains in Redis until replaced or explicitly deleted.
+
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `APP_ORIGIN` | Yes | Exact same-origin URL, e.g. the deployed HTTPS site URL. |
+| `UPSTASH_REDIS_REST_URL` | Yes | Upstash Redis REST endpoint. |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes | Server-side Upstash token; also needed by the upload script. |
+| `VERIFY_CODE_SECRET` | Legacy only | Random secret used to HMAC verification codes. |
+| `RESEND_API_KEY` | Legacy only | Server-side Resend API key. |
+| `EMAIL_FROM` | Legacy only | Verified sender such as `Portfolio <resume@example.com>`. |
+| `STRIPE_SECRET_KEY` | Yes | Stripe test or live secret key. |
+| `STRIPE_WEBHOOK_SECRET` | Yes | Signing secret for the webhook endpoint above. |
+| `STRIPE_LIVE_MODE` | Recommended | `false` for test mode or `true` for live mode. |
+
+Generate `VERIFY_CODE_SECRET` with a cryptographically secure random value, for example `openssl rand -hex 32`.
+
+## Development checks
 
 ```sh
-npm run build -- --base=/portfolio-service/
+npm install
+npm run lint
+npm test
+npm run build
 ```
 
-Publish the contents of `dist/` to a static hosting service. Public asset and resume URLs use Vite's configured base path.
+The automated tests use mocked Stripe, Redis, and email provider responses; they do not send actual email or charge a card.
+
+## Public repository history
+
+The two résumé PDFs were removed from the current project tree and future build output, but the original files existed in this public repository's Git history. Removing them from the latest commit cannot erase past commits, forks, caches, or downloaded copies. This implementation does not rewrite shared Git history. If the old résumé must be withdrawn from history, handle that separately with an authorized history rewrite and coordinate any existing clones. The synced `sources/` copy is reference material and is intentionally left untouched.
+
+## Existing portfolio content
+
+Résumé-derived content is in `src/data/portfolio.js`. The app preserves the current design, navigation, and illustrations. The old plain PDF URLs have been removed from both current public paths so they cannot bypass the access flow.

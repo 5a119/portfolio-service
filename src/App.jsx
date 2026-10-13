@@ -1,4 +1,5 @@
 import {lazy, Suspense} from 'react';
+import {ResumeAccessProvider} from './components/ResumeAccess';
 import {MotionConfig} from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -19,7 +20,7 @@ export default function App() {
   const pointerEffectsEnabled = usePointerEffectsEnabled();
 
   return (
-    <MotionConfig reducedMotion="user">
+    <ResumeAccessProvider><MotionConfig reducedMotion="user">
       <div className="relative min-h-screen bg-black-bg text-silver-300 selection:bg-accent/25 selection:text-white">
         <a href="#main-content" className="skip-link">Skip to content</a>
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
@@ -39,6 +40,6 @@ export default function App() {
         </main>
         <Footer />
       </div>
-    </MotionConfig>
+    </MotionConfig></ResumeAccessProvider>
   );
 }
