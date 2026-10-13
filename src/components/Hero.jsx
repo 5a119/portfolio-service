@@ -21,7 +21,7 @@ export default function Hero() {
         </div>
         <motion.div initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="order-1 lg:order-2 lg:col-span-5 flex justify-center lg:justify-end">
           <div className="hero-visual">
-            <div className="hero-photo"><img src={profile.image} alt={profile.name} width="7728" height="5152" fetchPriority="high" /></div>
+            <div className="hero-photo"><img src={profile.image} alt={profile.name} width="800" height="800" fetchPriority="high" /></div>
             <span className="orbit-badge top-5 right-4" aria-label="Cloud engineering"><Cloud size={22} /></span>
             <span className="orbit-badge bottom-2 sm:bottom-8 right-0" aria-label="Backend engineering"><Server size={22} /></span>
             <span className="orbit-badge bottom-2 sm:bottom-10 left-0" aria-label="Data systems"><Database size={22} /></span>

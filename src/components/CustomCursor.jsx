@@ -25,20 +25,33 @@ export default function CustomCursor() {
   useEffect(() => {
     const root = rootRef.current, fly = flyRef.current, frog = frogRef.current;
     const tongue = tongueRef.current, tongueSvg = tongueSvgRef.current;
-    const canvas = canvasRef.current, ctx = canvas.getContext('2d');
+    const canvas = canvasRef.current;
+    let ctx;
+    try {
+      ctx = canvas?.getContext('2d');
+    } catch {
+      return;
+    }
+    if (!root || !fly || !frog || !tongue || !tongueSvg || !canvas || !ctx) return;
     const fine = matchMedia('(hover: hover) and (pointer: fine)');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let stop = () => {};
     function start() {
       let frame = 0, visible = false, catchStart = 0, nextCatch = 0;
+      let supported = true;
       let particles = [], target = null;
       let nextBlink = performance.now()+1800, blinkStart = 0, doubleBlink = false;
       const mouse = { x: 0, y: 0 };
       const resize = () => {
-        const ratio = Math.min(devicePixelRatio || 1, 2);
-        canvas.width = innerWidth * ratio; canvas.height = innerHeight * ratio;
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-        resetCatch();
+        try {
+          const ratio = Math.min(devicePixelRatio || 1, 2);
+          canvas.width = innerWidth * ratio; canvas.height = innerHeight * ratio;
+          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+          resetCatch();
+        } catch {
+          supported = false;
+          hide();
+        }
       };
       const place = (x, y) => { fly.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%)`; };
       const resetCatch = () => {
@@ -46,7 +59,16 @@ export default function CustomCursor() {
         fly.style.opacity = '1';
         tongue.setAttribute('d', '');
       };
+      const schedule = () => {
+        try {
+          frame = requestAnimationFrame(draw);
+        } catch {
+          supported = false;
+          hide();
+        }
+      };
       const draw = (now) => {
+        try {
         if (!visible) return;
         ctx.clearRect(0, 0, innerWidth, innerHeight);
         if (!catchStart && !blinkStart && now >= nextBlink) {
@@ -107,9 +129,14 @@ export default function CustomCursor() {
           eye.setAttribute('transform', `translate(${distance ? localX/distance*12*strength : 0} ${distance ? localY/distance*14*strength : 0})`);
         });
         if (!catchStart) frog.style.setProperty('--frog-look', `${Math.max(-5,Math.min(5,(gaze.x-body.left-body.width/2)/100))}deg`);
-        frame=requestAnimationFrame(draw);
+        schedule();
+        } catch {
+          supported = false;
+          hide();
+        }
       };
       const move = e => {
+        if (!supported) return;
         if(e.pointerType !== 'mouse') return;
         const now=performance.now();
         fly.style.setProperty('--fly-tilt', `${Math.max(-18, Math.min(18, (e.clientX-mouse.x)*.6))}deg`);
@@ -120,9 +147,19 @@ export default function CustomCursor() {
         root.classList.toggle('is-interactive',interactive);
         particles.push({x:mouse.x,y:mouse.y+10,time:now,size:1+Math.random()*1.6});
         if(particles.length>90)particles.shift();
-        if(!visible){nextBlink=now+1800;visible=true;root.style.opacity='1';document.body.classList.add('custom-cursor-active');nextCatch=now+5000;frame=requestAnimationFrame(draw);}
+        if(!visible){nextBlink=now+1800;visible=true;root.style.opacity='1';document.body.classList.add('custom-cursor-active');nextCatch=now+5000;schedule();}
       };
-      const hide = () => {visible=false;root.style.opacity='0';root.classList.remove('is-pressed','is-blinking');blinkStart=0;document.body.classList.remove('custom-cursor-active');cancelAnimationFrame(frame);particles=[];ctx.clearRect(0,0,innerWidth,innerHeight);resetCatch();};
+      const hide = () => {
+        visible = false;
+        root.style.opacity = '0';
+        root.classList.remove('is-pressed', 'is-blinking');
+        blinkStart = 0;
+        document.body.classList.remove('custom-cursor-active');
+        try { cancelAnimationFrame(frame); } catch { /* The native cursor is already restored. */ }
+        particles = [];
+        try { ctx.clearRect(0, 0, innerWidth, innerHeight); } catch { /* Keep the native cursor available. */ }
+        resetCatch();
+      };
       const key = e => {if(e.key==='Tab')hide();};
       const visibility = () => {if(document.hidden)hide();};
       const press = () => {root.classList.add('is-pressed');};

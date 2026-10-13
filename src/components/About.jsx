@@ -10,7 +10,7 @@ export default function About() {
       <div className="lg:col-span-5 max-w-sm mx-auto w-full">
         <picture>
           <source media="(max-width: 1023px), (prefers-reduced-motion: reduce)" srcSet={`${import.meta.env.BASE_URL}about-still.png`} />
-          <img src={aboutGif} alt="Developer working at a computer" loading="lazy" className="w-full rounded-2xl grayscale" />
+          <img src={aboutGif} alt="Developer working at a computer" width="1200" height="1200" loading="lazy" className="w-full aspect-square rounded-2xl grayscale object-cover" />
         </picture>
       </div>
     </div>
