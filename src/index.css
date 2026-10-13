@@ -135,7 +135,7 @@
 .mascot-toggle { display: none; position: fixed; left: 72%; translate: -50% 0; bottom: 7px; z-index: 101; padding: 3px 8px; border-radius: 20px; color: #b5cbc5; background: #0e1918e8; border: 1px solid #26433c; font: 10px var(--font-sans); cursor: pointer; }
 @keyframes wing-flutter { from { transform: scaleX(.85); } to { transform: scaleX(1); } }
 @keyframes frog-happy { 50% { transform: translateY(-5px) rotate(3deg); } }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 900px) { .mascot-toggle { display: block; } }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .mascot-toggle { display: block; } }
 @media (max-width: 899px) { .lotus-frog { display: none; } }
 
 /* Separate breathing from the outer frog's look/catch transforms. */
