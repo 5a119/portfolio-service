@@ -1,5 +1,5 @@
 export const profile = {
-  name: 'Sang Nguyen', image: `${import.meta.env.BASE_URL}profile.jpg`, role: 'Software Engineer II',
+  name: 'Sang Nguyen', image: `${import.meta.env.BASE_URL}profile.webp`, role: 'Software Engineer II',
   headline: 'I build backend systems people can rely on.',
   location: 'San Francisco, CA',
   email: 'snguyen4work@gmail.com',
