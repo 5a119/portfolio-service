@@ -1,5 +1,5 @@
 import {createContext, useCallback, useContext, useEffect, useRef, useState} from 'react';
-import {ArrowLeft, ArrowUpRight, Coffee, FileText, LoaderCircle, X} from 'lucide-react';
+import {ArrowLeft, ArrowUpRight, Coffee, FileText, LoaderCircle, Mail, X} from 'lucide-react';
 import {makeApiError} from './resume-notification-status.js';
 import {emailDraft} from './resume-demo.js';
 import {profile} from '../data/portfolio';
@@ -88,20 +88,19 @@ export function ResumeAccessProvider({children}) {
     {children}
     <dialog ref={dialogRef} className="resume-dialog" aria-labelledby="resume-dialog-title" onClose={() => setOpen(false)} onClick={(event) => {if (event.target === dialogRef.current) close();}}>
       <div className="resume-dialog-panel">
-        <button type="button" className="resume-dialog-close" onClick={close} aria-label="Close résumé options"><X size={20} aria-hidden="true" /></button>
+        <button type="button" className="resume-dialog-close" onClick={close} aria-label="Close dialog"><X size={20} aria-hidden="true" /></button>
         {view === 'choose' && <>
           <p className="resume-dialog-eyebrow">Résumé access</p>
           <h2 id="resume-dialog-title">Choose how to get my résumé.</h2>
-          <p className="resume-dialog-intro">Instant access is $5. Or prepare a free email request; I’ll review it and reply myself.</p>
           {notice && <p className="resume-dialog-notice" role="status">{notice}</p>}
           <button type="button" className="resume-choice resume-choice-paid" onClick={() => {setError(''); setNotice(''); setView('payment');}}>
             <span className="resume-choice-icon"><Coffee size={22} aria-hidden="true" /></span>
-            <span className="resume-choice-copy"><strong>☕ Buy me a coffee</strong><span>You get my résumé. I get debugging fuel.</span><small>One-time $5 payment · Instant résumé access · 30 days in this browser</small></span>
+            <span className="resume-choice-copy"><strong>Buy me a coffee</strong></span>
             {busy ? <LoaderCircle className="resume-spinner" size={19} aria-label="Opening secure checkout" /> : <ArrowUpRight size={19} aria-hidden="true" />}
           </button>
           <button type="button" className="resume-choice" onClick={() => {setError(''); setNotice(''); setView('request');}}>
             <span className="resume-choice-icon"><FileText size={22} aria-hidden="true" /></span>
-            <span className="resume-choice-copy"><strong>Request it for free</strong><span>Fill in your details. Your mail app opens a ready-to-send draft.</span><small>Review the draft and press Send in your mail app.</small></span>
+            <span className="resume-choice-copy"><strong>Request it for free</strong></span>
             <ArrowUpRight size={19} aria-hidden="true" />
           </button>
           {error && <p className="resume-dialog-error" role="alert">{error}</p>}
@@ -115,12 +114,11 @@ export function ResumeAccessProvider({children}) {
           <p className="resume-fine-print">Checkout is hosted securely by Stripe. Access is saved in this browser; if you need help reopening your résumé, email snguyen4work@gmail.com with the Stripe receipt.</p>
           {error && <p className="resume-dialog-error" role="alert">{error}</p>}
         </>}
-        {view === 'request' && <>
-          <button type="button" className="resume-back" onClick={() => {setView('choose'); setError('');}}><ArrowLeft size={16} aria-hidden="true" /> Back to options</button>
-          <p className="resume-dialog-eyebrow">Free résumé request</p>
+        {(view === 'request' || view === 'contact') && <>
+          {view === 'request' && <button type="button" className="resume-back" onClick={() => {setView('choose'); setError('');}}><ArrowLeft size={16} aria-hidden="true" /> Back to options</button>}
+          <p className="resume-dialog-eyebrow">{view === 'contact' ? 'Get in touch' : 'Free résumé request'}</p>
           <h2 id="resume-dialog-title">Tell me what you need.</h2>
           <p className="resume-dialog-intro">Fill in your details, then open a prefilled email to Sang in your default mail app.</p>
-          <p className="resume-fine-print">This opens a draft; it does not send automatically. Your entered email is included in the message, and your mail app chooses the sending account.</p>
           {notice && <p className="resume-dialog-notice" role="status">{notice}</p>}
           <form onSubmit={submitRequest} className="resume-form">
             <label>Name<input name="name" autoComplete="name" maxLength="100" required disabled={busy} /></label>
@@ -148,4 +146,10 @@ export function ResumeAccessButton({className = 'button-secondary'}) {
   const context = useContext(ResumeAccessContext);
   if (!context) throw new Error('ResumeAccessButton must be inside ResumeAccessProvider');
   return <button type="button" className={className} onClick={() => context.show()}><FileText size={18} aria-hidden="true" />View Resume</button>;
+}
+
+export function EmailContactButton({children, className = 'button-primary'}) {
+  const context = useContext(ResumeAccessContext);
+  if (!context) throw new Error('EmailContactButton must be inside ResumeAccessProvider');
+  return <button type="button" className={className} onClick={() => context.show('contact')}><Mail size={18} aria-hidden="true" />{children}<ArrowUpRight size={16} aria-hidden="true" /></button>;
 }
