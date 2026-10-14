@@ -1,4 +1,3 @@
-import {Mail} from 'lucide-react';
 import {profile} from '../data/portfolio';
 
 function Github() {
@@ -11,6 +10,5 @@ export default function SocialLinks() {
   return <div className="flex gap-3">
     <a className="social-link" href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="Sang Nguyen on GitHub"><Github /></a>
     <a className="social-link" href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Sang Nguyen on LinkedIn"><Linkedin /></a>
-    <a className="social-link" href={`mailto:${profile.email}`} aria-label="Email Sang Nguyen"><Mail size={20} /></a>
   </div>;
 }

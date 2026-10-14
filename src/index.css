@@ -111,6 +111,10 @@
   body.custom-cursor-active, body.custom-cursor-active * { cursor: none !important; }
 }
 
+body:has(dialog:modal) .resume-dialog, body:has(dialog:modal) .resume-dialog *, body:has(dialog:modal) .resume-dialog::backdrop { cursor: auto !important; }
+body:has(dialog:modal) .resume-dialog button, body:has(dialog:modal) .resume-dialog a { cursor: pointer !important; }
+body:has(dialog:modal) .resume-dialog :disabled { cursor: wait !important; }
+
 .project-card { position: relative; isolation: isolate; }
 .project-card::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none; opacity: 0; background: radial-gradient(340px circle at var(--spotlight-x,50%) var(--spotlight-y,50%),rgba(92,224,202,.11),transparent 70%); transition: opacity .25s ease; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -178,3 +182,29 @@
 .email-address span { overflow-wrap: anywhere; }
 .email-address svg { flex-shrink: 0; color: var(--muted); }
 .email-address:hover, .email-address:hover svg { color: var(--accent); }
+
+.resume-dialog { position: fixed; inset: 0; margin: auto; width: min(560px, calc(100% - 28px)); max-width: 560px; max-height: min(90dvh, 850px); padding: 0; overflow: auto; color: var(--ink); border: 1px solid rgba(92, 224, 202, .25); border-radius: 22px; background: #0b1112; box-shadow: 0 32px 110px rgba(0, 0, 0, .7); }
+.resume-dialog::backdrop { background: rgba(1, 5, 6, .78); backdrop-filter: blur(6px); }
+.resume-dialog-panel { position: relative; padding: clamp(25px, 6vw, 42px); }
+.resume-dialog-close { position: absolute; top: 17px; right: 17px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; background: rgba(255, 255, 255, .035); color: var(--muted); cursor: pointer; }
+.resume-dialog-close:hover, .resume-dialog-close:focus-visible { color: var(--ink); border-color: rgba(92, 224, 202, .5); outline: 2px solid rgba(92, 224, 202, .5); outline-offset: 2px; }
+.resume-dialog-eyebrow { margin: 0 48px 11px 0; color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; font-weight: 800; }
+.resume-dialog h2 { margin: 0 36px 13px 0; color: var(--ink); font-family: var(--font-heading), sans-serif; font-size: clamp(1.8rem, 5vw, 2.45rem); line-height: 1.08; letter-spacing: -.05em; }
+.resume-dialog h2 svg { display: inline-block; vertical-align: -3px; margin-right: 4px; color: var(--accent); }
+.resume-dialog-intro { margin: 0 0 23px; color: var(--muted); font-size: .98rem; line-height: 1.6; }
+.resume-choice { display: flex; width: 100%; align-items: center; gap: 14px; margin-top: 12px; padding: 17px; text-align: left; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); background: rgba(255, 255, 255, .025); cursor: pointer; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.resume-choice:hover:not(:disabled), .resume-choice:focus-visible { transform: translateY(-1px); border-color: rgba(92, 224, 202, .5); background: rgba(92, 224, 202, .07); outline: none; }
+.resume-choice:disabled { opacity: .72; cursor: wait; }
+.resume-choice-paid { border-color: rgba(92, 224, 202, .32); background: linear-gradient(110deg, rgba(35, 111, 98, .2), rgba(255, 255, 255, .025)); }
+.resume-choice-icon { flex: 0 0 43px; display: grid; place-items: center; width: 43px; height: 43px; border: 1px solid rgba(92, 224, 202, .24); border-radius: 13px; color: var(--accent); background: rgba(92, 224, 202, .07); }
+.resume-choice-copy { display: grid; flex: 1; gap: 4px; }.resume-choice-copy strong { font-size: .97rem; }.resume-choice-copy span { color: #c0cecb; font-size: .82rem; line-height: 1.4; }.resume-choice-copy small { color: var(--muted); font-size: .72rem; line-height: 1.35; }
+.resume-form { display: grid; gap: 13px; }.resume-form label { display: grid; gap: 6px; color: #dbe7e4; font-size: .83rem; font-weight: 700; }.resume-form input, .resume-form textarea { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid rgba(183, 218, 211, .2); border-radius: 10px; outline: none; color: var(--ink); background: #10191a; font: inherit; font-weight: 400; }.resume-form input:focus, .resume-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(92, 224, 202, .12); }.resume-form input:disabled, .resume-form textarea:disabled { opacity: .65; }.resume-form textarea { resize: vertical; }
+.resume-honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
+.resume-submit { display: inline-flex; min-height: 48px; width: 100%; align-items: center; justify-content: center; gap: 9px; padding: 12px 17px; border: 0; border-radius: 999px; color: #05201c; background: var(--accent); font-weight: 800; text-align: center; cursor: pointer; }.resume-submit:hover:not(:disabled), .resume-submit:focus-visible { background: #8cf0df; outline: 2px solid rgba(92, 224, 202, .55); outline-offset: 3px; }.resume-submit:disabled { opacity: .7; cursor: wait; }.resume-download { text-decoration: none; }
+.resume-dialog-error { margin: 11px 0 0; padding: 10px 12px; border: 1px solid rgba(255, 126, 126, .25); border-radius: 10px; color: #ffbaba; background: rgba(142, 42, 42, .12); font-size: .83rem; line-height: 1.5; }.resume-dialog-notice { margin: 0 0 14px; color: #b9ebe2; font-size: .85rem; line-height: 1.5; }.resume-fine-print { margin: 15px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }.resume-back, .resume-text-button { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 20px; padding: 0; border: 0; color: var(--accent); background: transparent; font-size: .81rem; font-weight: 700; cursor: pointer; }.resume-text-button { margin: 13px 0 0; }.resume-back:hover, .resume-text-button:hover:not(:disabled) { color: white; text-decoration: underline; text-underline-offset: 3px; }.resume-text-button:disabled { color: var(--muted); cursor: default; }.resume-spinner { animation: resume-spin 1s linear infinite; }
+@keyframes resume-spin { to { transform: rotate(360deg); } }
+.resume-email-access { margin-top: 18px; }
+.resume-countdown { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 16px; margin: 0; border: 1px solid rgba(92, 224, 202, .25); border-radius: 14px; color: var(--accent); background: rgba(92, 224, 202, .07); }
+.resume-countdown strong { font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) { .resume-dialog { position: fixed; inset: 0; margin: auto; width: calc(100% - 20px); max-height: 92dvh; border-radius: 17px; }.resume-dialog-panel { padding: 27px 20px; }.resume-choice { align-items: flex-start; padding: 14px; gap: 10px; }.resume-choice-icon { flex-basis: 38px; width: 38px; height: 38px; }.resume-choice-copy small { font-size: .69rem; } }
+@media (prefers-reduced-motion: reduce) { .resume-choice, .resume-spinner { transition: none; animation: none; } }

@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/resume/email-access.js": {"includeFiles": "private/**"},
+    "api/resume/checkout.js": {"includeFiles": "private/**"},
+    "api/resume/download.js": {"includeFiles": "private/**"}
+  }
+}
