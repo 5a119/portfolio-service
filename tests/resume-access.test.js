@@ -4,6 +4,7 @@ import {createHmac} from 'node:crypto';
 import checkoutWebhook from '../api/stripe/webhook.js';
 import startCheckout from '../api/resume/checkout.js';
 import downloadResume from '../api/resume/download.js';
+import emailAccess from '../api/resume/email-access.js';
 import resendCode from '../api/resume/resend-code.js';
 import createRequest from '../api/resume/request.js';
 import notifyRequest from '../api/resume/notify.js';
@@ -181,6 +182,37 @@ test.after(() => {
   globalThis.fetch = savedFetch;
   for (const key of Object.keys(process.env)) if (!(key in savedEnv)) delete process.env[key];
   Object.assign(process.env, savedEnv);
+});
+
+test('email access enforces the countdown and browser cookie before serving the private PDF', async () => {
+  const now = Date.now();
+  const savedNow = Date.now;
+  Date.now = () => now;
+  try {
+    const pdf = Buffer.from('%PDF-1.7\n' + 'x'.repeat(100));
+    set('resume:private:pdf:v1', pdf.toString('base64'));
+    const created = mockRes();
+    await emailAccess({method: 'POST', headers: {origin: process.env.APP_ORIGIN}}, created);
+    assert.equal(created.statusCode, 200);
+    assert.equal(created.json().waitSeconds, 10);
+    assert.match(created.headers['set-cookie'], /HttpOnly; SameSite=Lax/);
+    const cookie = created.headers['set-cookie'].split(';')[0];
+    let result = mockRes();
+    await emailAccess({method: 'GET', headers: {cookie}}, result);
+    assert.equal(result.statusCode, 403);
+    Date.now = () => now + 10_000;
+    result = mockRes();
+    await emailAccess({method: 'GET', headers: {}}, result);
+    assert.equal(result.statusCode, 401);
+    result = mockRes();
+    await emailAccess({method: 'GET', headers: {cookie}}, result);
+    assert.equal(result.statusCode, 200);
+    assert.equal(result.headers['content-type'], 'application/pdf');
+    assert.deepEqual(result.body, pdf);
+    result = mockRes();
+    await emailAccess({method: 'POST', headers: {origin: 'https://other.example'}}, result);
+    assert.equal(result.statusCode, 403);
+  } finally { Date.now = savedNow; }
 });
 
 test('rejects unsigned callbacks and records signed paid fulfillment idempotently', async () => {
