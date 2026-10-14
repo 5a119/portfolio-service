@@ -7,4 +7,4 @@ dist/
 .idea/
 .vscode/
 tmp/
-private/resume.pdf
+private/access-secret.key

@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-resume.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/prepare-resume.mjs",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "node --test tests/*.test.js",
-    "resume:upload": "node scripts/upload-resume.mjs"
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",

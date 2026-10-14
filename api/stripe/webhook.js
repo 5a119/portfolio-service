@@ -1,9 +1,7 @@
 import {
-    ACCESS_SECONDS,
     accessRemainingSeconds,
     errorReply,
     rawBody,
-    redis,
     reply,
     successfulPaymentTimestamp,
     validatePaidSession,
@@ -28,11 +26,8 @@ export default async function handler(req, res) {
     if (!paidAt) return reply(res, 400, { error: 'invalid_payment', message: 'Checkout does not include a verified successful payment.' });
     const accessSeconds = accessRemainingSeconds(paidAt);
     if (!accessSeconds) return reply(res, 200, { received: true, fulfillment: 'access_period_ended' });
-    const flowHash = session.metadata.flow_hash;
-    const flowJson = await redis(['GET', `resume:flow:${flowHash}`]);
-    if (!flowJson || JSON.parse(flowJson).sessionId !== session.id) return reply(res, 400, { error: 'unknown_checkout', message: 'Checkout session is not associated with this browser flow.' });
-    const firstDelivery = await redis(['SET', `resume:stripe:event:${event.id}`, '1', 'EX', '7776000', 'NX']);
-    await redis(['SET', `resume:paid:${session.id}`, JSON.stringify({ flowHash, paidAt, expiresAt: paidAt + ACCESS_SECONDS * 1000 }), 'EX', String(accessSeconds), 'NX']);
-    return reply(res, 200, { received: true, fulfillment: firstDelivery ? 'recorded' : 'duplicate' });
+    // No fulfillment write is needed: downloads verify payment directly with Stripe.
+    // Retried webhook deliveries therefore have no duplicate side effects.
+    return reply(res, 200, {received: true, fulfillment: 'verified'});
   } catch (error) { return errorReply(res, error); }
 }

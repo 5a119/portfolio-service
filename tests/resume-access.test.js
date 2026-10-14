@@ -2,19 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import checkoutWebhook from '../api/stripe/webhook.js';
-import startCheckout from '../api/resume/checkout.js';
+import {createCheckoutHandler} from '../api/resume/checkout.js';
 import downloadResume from '../api/resume/download.js';
 import emailAccess from '../api/resume/email-access.js';
+import {createEmailAccessHandler} from '../server/_lib/email-access.js';
+import {readPrivateResume} from '../server/_lib/private-resume.js';
 import resendCode from '../api/resume/resend-code.js';
 import createRequest from '../api/resume/request.js';
 import notifyRequest from '../api/resume/notify.js';
 import verifyCode from '../api/resume/verify.js';
-import {ACCESS_SECONDS, accessRemainingSeconds, codeHash, sha} from '../server/_lib/http.js';
+import {ACCESS_SECONDS, accessRemainingSeconds, ApiError, codeHash, sha} from '../server/_lib/http.js';
 import {
   makeApiError,
   notificationFeedback,
   verificationRecovery
 } from '../src/components/resume-notification-status.js';
+
+let checkoutPdfAvailable = true;
+const startCheckout = createCheckoutHandler({
+  async loadPdf() {
+    if (!checkoutPdfAvailable) throw new ApiError(503, 'resume_unavailable', 'PDF missing');
+    return readPrivateResume();
+  },
+  async rateLimit() {},
+});
 
 const savedFetch = globalThis.fetch;
 const savedEnv = {...process.env};
@@ -161,8 +172,10 @@ function signedEvent(event) {
 test.beforeEach(() => {
   redisData.clear(); stripeSessions.clear(); stripePaymentIntents.clear(); stripeCharges.clear(); stripeLineItems.length = 0; emailOutbox.length = 0;
   stripeCreateCalls = 0;
+  checkoutPdfAvailable = true;
   Object.assign(process.env, {
     UPSTASH_REDIS_REST_URL: 'https://redis.example.test', UPSTASH_REDIS_REST_TOKEN: 'test-token',
+    RESUME_ACCESS_SECRET: 'test-resume-signing-key-at-least-32-characters',
     VERIFY_CODE_SECRET: 'test-verification-secret', RESEND_API_KEY: 'test-email-key', EMAIL_FROM: 'Portfolio <test@example.test>',
     STRIPE_SECRET_KEY: stripeSecret, STRIPE_WEBHOOK_SECRET: 'test-webhook-secret', APP_ORIGIN: 'https://portfolio.example.test',
     STRIPE_LIVE_MODE: 'false', NODE_ENV: 'test',
@@ -189,8 +202,9 @@ test('email access enforces the countdown and browser cookie before serving the 
   const savedNow = Date.now;
   Date.now = () => now;
   try {
-    const pdf = Buffer.from('%PDF-1.7\n' + 'x'.repeat(100));
-    set('resume:private:pdf:v1', pdf.toString('base64'));
+    const pdf = await readPrivateResume();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
     const created = mockRes();
     await emailAccess({method: 'POST', headers: {origin: process.env.APP_ORIGIN}}, created);
     assert.equal(created.statusCode, 200);
@@ -205,17 +219,25 @@ test('email access enforces the countdown and browser cookie before serving the 
     await emailAccess({method: 'GET', headers: {}}, result);
     assert.equal(result.statusCode, 401);
     result = mockRes();
-    await emailAccess({method: 'GET', headers: {cookie}}, result);
+    // A fresh handler must authorize the cookie without in-memory records.
+    await createEmailAccessHandler()({method: 'GET', headers: {cookie}}, result);
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers['content-type'], 'application/pdf');
     assert.deepEqual(result.body, pdf);
+    result = mockRes();
+    await emailAccess({method: 'GET', headers: {cookie: cookie.replace('resume_email_access=', 'resume_email_access=forged')}}, result);
+    assert.equal(result.statusCode, 401);
+    Date.now = () => now + 31 * 24 * 60 * 60 * 1000;
+    result = mockRes();
+    await emailAccess({method: 'GET', headers: {cookie}}, result);
+    assert.equal(result.statusCode, 401);
     result = mockRes();
     await emailAccess({method: 'POST', headers: {origin: 'https://other.example'}}, result);
     assert.equal(result.statusCode, 403);
   } finally { Date.now = savedNow; }
 });
 
-test('rejects unsigned callbacks and records signed paid fulfillment idempotently', async () => {
+test('rejects unsigned callbacks and verifies retried payments without database writes', async () => {
   const flow = 'bound-browser-secret';
   const flowHash = sha(flow);
   const session = {id: 'cs_test_example123', mode: 'payment', payment_status: 'paid', currency: 'usd', amount_total: 500, metadata: {product: 'resume-v1', flow_hash: flowHash}, created: 1_800_000_000, livemode: false};
@@ -235,18 +257,19 @@ test('rejects unsigned callbacks and records signed paid fulfillment idempotentl
     return result;
   };
   assert.equal((await invoke()).statusCode, 200);
-  assert.equal((await invoke()).json().fulfillment, 'duplicate');
-  assert.equal(JSON.parse(get(`resume:paid:${session.id}`)).flowHash, flowHash);
+  assert.equal((await invoke()).json().fulfillment, 'verified');
+  assert.equal(get(`resume:paid:${session.id}`), null);
 });
 
 test('does not charge without the private PDF and reuses a paid browser flow', async () => {
   const request = {method: 'POST', headers: {origin: process.env.APP_ORIGIN, host: 'portfolio.example.test'}, body: {}};
+  checkoutPdfAvailable = false;
   let result = mockRes();
   await startCheckout(request, result);
   assert.equal(result.statusCode, 503);
   assert.equal(stripeCreateCalls, 0);
 
-  set('resume:private:pdf:v1', Buffer.from('%PDF-1.7').toString('base64'));
+  checkoutPdfAvailable = true;
   const flow = 'already-paid-browser-secret';
   const flowHash = sha(flow);
   const session = {id: 'cs_test_paidflow', status: 'complete', url: null, mode: 'payment', payment_status: 'paid', currency: 'usd', amount_total: 500, metadata: {product: 'resume-v1', flow_hash: flowHash}, created: Math.floor(Date.now() / 1000) - 86_400, livemode: false};
@@ -255,14 +278,16 @@ test('does not charge without the private PDF and reuses a paid browser flow', a
   stripeLineItems.push({quantity: 1, price: {unit_amount: 500, currency: 'usd'}});
   set(`resume:flow:${flowHash}`, JSON.stringify({status: 'checkout', sessionId: session.id}));
   result = mockRes();
-  await startCheckout({...request, headers: {...request.headers, cookie: `resume_flow=${flow}`}}, result);
+  await startCheckout({...request, headers: {...request.headers, cookie: `resume_flow=${flow}; resume_checkout=${session.id}`}}, result);
   assert.equal(result.statusCode, 200);
   assert.equal(result.json().url, `${process.env.APP_ORIGIN}/?resume=success&session_id=${session.id}`);
   assert.equal(stripeCreateCalls, 0);
   assert.equal(result.headers['set-cookie'], undefined);
 });
 
-test('per-session browser bindings preserve access to two initial checkouts', async () => {
+test('per-session browser bindings preserve access to two initial checkouts without Redis', async () => {
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
   set('resume:private:pdf:v1', Buffer.from(`%PDF-1.7 ${'x'.repeat(120)}`).toString('base64'));
   const request = {method: 'POST', headers: {origin: process.env.APP_ORIGIN, host: 'portfolio.example.test'}, body: {}};
   const invokeCheckout = async () => {
@@ -325,11 +350,10 @@ test('download requires the original browser cookie and a fully paid fixed-price
   assert.equal(allowed.statusCode, 200);
   assert.equal(allowed.headers['cache-control'], 'no-store, private');
   assert.match(Buffer.from(allowed.body).toString(), /^%PDF-/);
-  const entitlement = JSON.parse(get(`resume:paid:${session.id}`));
   const paidAt = stripeCharges.get('ch_resume123').created * 1000;
-  assert.equal(entitlement.paidAt, paidAt);
-  assert.equal(entitlement.expiresAt, paidAt + ACCESS_SECONDS * 1000);
   assert.ok(accessRemainingSeconds(paidAt) > ACCESS_SECONDS - 5);
+  addSuccessfulPayment(session, Math.floor(Date.now() / 1000) - ACCESS_SECONDS - 1);
+  assert.equal((await call(flow)).statusCode, 403);
 });
 
 test('expired verification codes cannot notify the owner', async () => {
