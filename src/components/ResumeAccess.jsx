@@ -185,7 +185,7 @@ export function ResumeAccessProvider({children}) {
   </ResumeAccessContext.Provider>;
 }
 
-export function ResumeAccessButton({className = 'button-secondary'}) {
+export function ResumeAccessButton({className = 'button-primary'}) {
   const context = useContext(ResumeAccessContext);
   if (!context) throw new Error('ResumeAccessButton must be inside ResumeAccessProvider');
   return <button type="button" className={className} onClick={() => context.show()}><FileText size={18} aria-hidden="true" />View Resume</button>;

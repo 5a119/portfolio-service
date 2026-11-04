@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 
-const MAGNETIC_BUTTONS = '.header-cta, .button-primary, .button-secondary';
+const MAGNETIC_BUTTONS = '.button-primary';
 
 export default function PointerEffects() {
   useEffect(() => {
