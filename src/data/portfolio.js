@@ -1,14 +1,14 @@
 export const profile = {
   name: 'Sang Nguyen', image: `${import.meta.env.BASE_URL}profile.webp`, role: 'Software Engineer II',
-  headline: 'I build backend systems people can rely on.',
+  headline: 'I build backends that hold up in production.',
   location: 'San Francisco, CA',
   email: 'snguyen4work@gmail.com',
   github: 'https://github.com/5a119/',
   linkedin: 'https://www.linkedin.com/in/sangoscar99/',
-  summary: 'I turn complex requirements into reliable backend services using Java, Spring Boot, and AWS. I bring those systems from design to deployment and keep them running smoothly in production.',
+  summary: 'I’m Sang, a software engineer working with Java, Spring Boot, and AWS. At Blackhawk Network, I build order services and follow them from design through deployment and production support.',
   about: [
-    'At Blackhawk Network, I build cloud-native services for order management, from distributed workflows and data storage to caching and AWS infrastructure. I work primarily with Java and Spring Boot, with a focus on reliability, maintainability, and how systems behave in production.',
-    'That work includes reusable search tooling with MongoDB Atlas, event-driven integrations, automated testing, and release pipelines. I also support services on call, investigate failures, and validate fixes. My earlier experience as a peer tutor shaped how I explain technical ideas and help others work through complex problems.'
+    'My work spans the parts of a backend that have to work together: services, databases, queues, and cloud infrastructure. At Blackhawk Network, I build order workflows, create reusable search tools, and investigate issues on call. Supporting what I ship keeps me thinking about how a system will behave long after the first release.',
+    'Before working as an engineer, I was a peer tutor in computer science, math, and statistics. That experience shaped how I work with people: break a problem into smaller pieces, explain the reasoning, and work through it together. I bring the same patience to a tricky bug as I do to a technical conversation.'
   ],
 };
 export const navigation = [
@@ -23,19 +23,19 @@ export const experience = [
     company: 'Blackhawk Network', role: 'Software Engineer II',
     dates: 'July 2022 – Present', location: 'Pleasanton, CA',
     bullets: [
-      'Designed and delivered a cloud-native order management platform processing 40K+ orders a day across distributed services and AWS infrastructure.',
+      'Designed and delivered an order management platform processing more than 40,000 orders a day across distributed services on AWS.',
       'Containerized services with Docker and deployed them to AWS ECS through Jenkins pipelines, using CloudFormation to provision infrastructure.',
-      'Built a reusable Java library that translates RSQL expressions into MongoDB Atlas Search pipelines, giving downstream services consistent search capabilities.',
-      'Built event-driven workflows with AWS EventBridge, SNS, and SQS to send order notifications as orders move through their lifecycle.',
-      'Advanced TDD and BDD practices with JUnit, Mockito, Cucumber, and Karate, increasing code coverage by 40% and reducing production bugs by 50%, with zero critical vulnerabilities.',
-      'Led production investigations across services, databases, queues, and logs; validated fixes and caught defects before they affected customers.',
+      'Built a reusable Java library that turns RSQL queries into MongoDB Atlas Search pipelines, so other services can share the same search logic.',
+      'Connected order workflows with AWS EventBridge, SNS, and SQS to send notifications as orders move through each stage.',
+      'Expanded automated testing with JUnit, Mockito, Cucumber, and Karate, increasing code coverage by 40% and reducing production bugs by 50%.',
+      'Led production investigations across services, databases, queues, and logs, then validated fixes before release.',
     ],
     technologies: ['Java', 'Spring Boot', 'AWS', 'MongoDB Atlas Search', 'Docker', 'Jenkins'],
   },
   {
     company: 'Contra Costa College', role: 'Peer Tutor',
     dates: 'February 2018 – December 2019', location: 'San Pablo, CA',
-    bullets: ['Helped 60+ students strengthen their understanding of computer science, mathematics, and statistics through personalized instruction and progress monitoring.'],
+    bullets: ['Helped more than 60 students work through computer science, math, and statistics problems, adapting explanations to their needs and tracking their progress.'],
     technologies: ['Computer Science', 'Mathematics', 'Statistics', 'Mentoring'],
   },
 ];
@@ -51,15 +51,15 @@ export const projects = [
   {
     title: 'Tracitivity', category: 'Activity tracking & visualization',
     dates: 'March 2021 – May 2021', visual: 'activity',
-    description: 'A full-stack application for securely recording activity sessions, exploring activity data, and keeping track of reminders.',
-    highlights: ['Implemented OAuth 2.0 authentication and secure access-token exchange with protected Google APIs.', 'Built activity storage and retrieval, interactive D3.js visualizations, and automated reminders.'],
+    description: 'An activity tracker that brings session records, interactive charts, and reminders into one application.',
+    highlights: ['Connected protected Google APIs using OAuth 2.0 and secure access-token exchange.', 'Built session storage and retrieval, D3.js charts, and automated reminders.'],
     technologies: ['Java', 'D3.js', 'OAuth 2.0', 'REST API', 'Google APIs'],
   },
   {
     title: 'Shop Till You Drop', category: 'College cost exploration',
     dates: 'May 2021 – June 2021', visual: 'web',
-    description: 'A responsive React application that helps students estimate tuition costs using College Scorecard data.',
-    highlights: ['Created reusable, accessible React components for desktop, tablet, and mobile.', 'Optimized College Scorecard API calls and automated integration and delivery with GitHub Actions.'],
+    description: 'A React application that helps students explore tuition costs using College Scorecard data.',
+    highlights: ['Built reusable, accessible components that work across desktop, tablet, and mobile.', 'Optimized API calls and automated integration and delivery with GitHub Actions.'],
     technologies: ['React', 'REST API', 'GitHub Actions', 'CI/CD'],
   },
 ];
@@ -72,49 +72,39 @@ export const education = [
 export const sections = {
   "about": {
     "eyebrow": "01 · About",
-    "title": "Thoughtful design. Dependable software."
+    "title": "The work goes beyond the code."
   },
   "experience": {
     "eyebrow": "02 · Experience",
-    "title": "Built to hold up in production.",
-    "description": "Backend engineering, cloud delivery, and hands-on production support."
+    "title": "What I’ve worked on.",
+    "description": "Order processing at scale, shared search tooling, and the work of keeping services running."
   },
   "education": {
     "eyebrow": "03 · Education",
-    "title": "A foundation in computer science."
+    "title": "Where I studied."
   },
   "projects": {
     "eyebrow": "04 · Selected Work",
-    "title": "Useful ideas, built into working software.",
-    "description": "Academic projects exploring secure integrations, interactive data, and accessible web experiences."
+    "title": "A few things I’ve built.",
+    "description": "Earlier academic projects in API integration, data visualization, and web development."
   },
   "skills": {
-    "eyebrow": "05 · Technical Toolkit",
-    "title": "Tools for building and improving systems."
-  },
-  "certifications": {
-    "eyebrow": "06 · Learning",
-    "title": "Learning that carries into the work."
+    "eyebrow": "05 · Skills",
+    "title": "What I work with."
   },
   "contact": {
-    "eyebrow": "07 · Contact",
-    "title": "Let’s build something dependable.",
-    "description": "Have a software engineering opportunity or a challenging backend problem? Let’s talk about how I can help."
+    "eyebrow": "06 · Contact",
+    "title": "Let’s talk.",
+    "description": "Have a role or a backend problem you’d like to discuss? I’d be glad to hear about it."
   }
 };
 
 export const actions = {
   talk: 'Let’s talk',
-  email: 'Email Me',
-};
-export const learning = {
-  title: 'Certifications & Continuous Learning',
-  status: 'In Progress',
-  description: 'I’m building on my experience through ongoing study and hands-on practice. Completed certifications and learning milestones will appear here as I earn them.',
-  next: 'More milestones ahead.',
+  email: 'Email me',
 };
 export const contact = {
-  heading: 'Good engineering starts with a conversation.',
-  body: 'I’m interested in opportunities to design dependable services, simplify complex systems, and help teams deliver reliable software.',
-  emailLabel: 'Reach me directly',
+  heading: 'A little context goes a long way.',
+  body: 'Tell me about your team, what you’re building, and where you could use a hand. My strongest fit is backend work with Java, Spring Boot, and AWS.',
+  emailLabel: 'Write to me',
 };

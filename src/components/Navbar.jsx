@@ -35,7 +35,7 @@ export default function Navbar() {
         {navigation.map(({ id, label }) => <a key={id} href={`#${id}`} aria-current={active === id ? 'location' : undefined}>{label}</a>)}
       </nav>
       <div className="header-actions">
-        <a href="#contact" onClick={() => setOpen(false)} className="header-cta" aria-current={active === 'contact' ? 'location' : undefined}>Let’s talk<ArrowUpRight size={16} aria-hidden="true" /></a>
+        <a href="#contact" onClick={() => setOpen(false)} className="button-primary header-cta" aria-current={active === 'contact' ? 'location' : undefined}>Let’s talk<ArrowUpRight size={16} aria-hidden="true" /></a>
         <button ref={menuButtonRef} type="button" className="menu-button" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls={open ? 'mobile-navigation' : undefined} onClick={() => setOpen(!open)}>{open ? <X size={21} /> : <Menu size={21} />}</button>
       </div>
     </header>

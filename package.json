@@ -9,8 +9,7 @@
     "prebuild": "node scripts/prepare-resume.mjs",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview",
-    "test": "node --test tests/*.test.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",

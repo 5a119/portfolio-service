@@ -16,7 +16,7 @@ function ProjectVisual({ type }) {
   const Icon = activity ? Activity : Monitor;
   const steps = activity ? [{ icon: ShieldCheck, name: 'Authorize' }, { icon: ChartNoAxesCombined, name: 'Visualize' }, { icon: Bell, name: 'Remind' }] : [{ icon: PanelsTopLeft, name: 'React UI' }, { icon: GraduationCap, name: 'Scorecard API' }, { icon: GitBranch, name: 'CI/CD' }];
   return <div className="project-visual" aria-hidden="true">
-    <div className="flex items-center gap-2 text-silver-300 text-sm mb-7"><Icon size={20} /><span>{activity ? 'Activity sessions' : 'Connected web experiences'}</span></div>
+    <div className="flex items-center gap-2 text-silver-300 text-sm mb-7"><Icon size={20} /><span>{activity ? 'Activity tracking' : 'College cost explorer'}</span></div>
     <div className="grid grid-cols-3 gap-3">{steps.map(step => <div key={step.name} className="rounded-xl border border-white/15 bg-black/40 py-5 flex flex-col items-center gap-3"><step.icon size={26} /><span className="text-[10px] sm:text-xs text-silver-400">{step.name}</span></div>)}</div>
   </div>;
 }
