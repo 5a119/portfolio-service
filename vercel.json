@@ -1,7 +1,6 @@
 {
-  "functions": {
-    "api/resume/email-access.js": {"includeFiles": "private/**"},
-    "api/resume/checkout.js": {"includeFiles": "private/**"},
-    "api/resume/download.js": {"includeFiles": "private/**"}
-  }
+  "redirects": [
+    {"source": "/api/resume/download", "destination": "/resume.pdf", "permanent": false},
+    {"source": "/api/resume/email-access", "destination": "/resume.pdf", "permanent": false}
+  ]
 }

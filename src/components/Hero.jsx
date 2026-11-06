@@ -2,7 +2,7 @@ import {Cloud, Database, MapPin, MessageSquare, Server} from 'lucide-react';
 import {motion, useReducedMotion} from 'framer-motion';
 import {actions, profile} from '../data/portfolio';
 import SocialLinks from './SocialLinks';
-import {ResumeAccessButton} from './ResumeAccess';
+import {ResumeLink} from './PortfolioActions';
 
 export default function Hero() {
   const reduceMotion = useReducedMotion();
@@ -16,7 +16,7 @@ export default function Hero() {
           <p className="flex gap-2 items-center justify-center lg:justify-start text-sm text-silver-400 mt-5"><MapPin size={16} aria-hidden="true" />{profile.location}</p>
           <div className="flex flex-wrap justify-center lg:justify-start gap-3 mt-8">
             <a className="button-primary" href="#contact"><MessageSquare size={18} aria-hidden="true" />{actions.talk}</a>
-            <ResumeAccessButton />
+            <ResumeLink />
           </div>
           <div className="mt-7 flex justify-center lg:justify-start"><SocialLinks /></div>
         </div>

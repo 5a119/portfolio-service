@@ -99,7 +99,7 @@
   }
 }
 
-.button-primary:focus-visible, .resume-submit:focus-visible { outline: 2px solid #fff2e9; outline-offset: 4px; }
+.button-primary:focus-visible { outline: 2px solid #fff2e9; outline-offset: 4px; }
 
 @layer utilities {
   .glass { background: var(--surface); backdrop-filter: blur(18px); border-color: var(--line); box-shadow: var(--shadow); }
@@ -109,9 +109,11 @@
   .portfolio-card { border: 1px solid #2d4973; border-radius: 20px; background: linear-gradient(150deg, #142d55, #0c1932); box-shadow: var(--shadow); transition: border-color .25s ease, transform .25s ease; }
   .portfolio-card:hover { border-color: color-mix(in srgb, var(--accent) 42%, transparent); }
   .tag { display: inline-flex; align-items: center; border-radius: 7px; border: 1px solid var(--line); padding: 6px 10px; font-size: 12px; color: var(--body-text); background: color-mix(in srgb, var(--accent) 3.5%, transparent); }
-  .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 999px; padding: 14px 20px; font-size: 14px; font-weight: 700; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+  .button-primary, .button-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 999px; padding: 14px 20px; font-size: 14px; font-weight: 700; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
   .button-primary { background: var(--warm); color: var(--action-ink); border: 1px solid var(--warm); box-shadow: var(--action-glow); }
   .button-primary:hover { background: var(--warm-hover); transform: translateY(-2px); }
+  .button-secondary { color: var(--ink-soft); border: 1px solid var(--field-border); background: transparent; }
+  .button-secondary:hover { color: var(--ink); border-color: var(--accent-text); background: color-mix(in srgb, var(--accent) 12%, transparent); transform: translateY(-2px); }
   .social-link { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--muted); transition: color .2s ease, border-color .2s ease, transform .2s ease; }
   .social-link:hover { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 42%, transparent); transform: translateY(-2px); }
   .orbit-badge { @apply absolute w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); background: var(--surface-strong); color: var(--accent-text); box-shadow: 0 8px 30px rgba(0,0,0,.25); }
@@ -129,7 +131,7 @@
 .site-header.is-scrolled { background: rgb(5 10 25 / 97%); }
 .brand { display: inline-flex; align-items: center; gap: 10px; width: fit-content; font-family: var(--font-heading); font-size: 18px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); white-space: nowrap; }
 .brand-mark { width: 32px; height: 32px; object-fit: contain; }
-.desktop-nav { display: flex; align-items: center; gap: 3px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface-strong) 72%, transparent); }
+.desktop-nav { display: flex; align-items: center; gap: 3px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: transparent; }
 .desktop-nav a { color: var(--muted); padding: 8px 12px; border-radius: 999px; font-size: 13px; transition: color .2s ease, background .2s ease; white-space: nowrap; }
 .desktop-nav a:hover, .mobile-nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .desktop-nav a[aria-current="location"], .mobile-nav a[aria-current="location"] { color: var(--accent-text); text-decoration: underline; text-underline-offset: 4px; }
@@ -186,9 +188,6 @@
   body.custom-cursor-active, body.custom-cursor-active * { cursor: none !important; }
 }
 
-body:has(dialog:modal) .resume-dialog, body:has(dialog:modal) .resume-dialog *, body:has(dialog:modal) .resume-dialog::backdrop { cursor: auto !important; }
-body:has(dialog:modal) .resume-dialog button, body:has(dialog:modal) .resume-dialog a { cursor: pointer !important; }
-body:has(dialog:modal) .resume-dialog :disabled { cursor: wait !important; }
 
 .project-card { position: relative; isolation: isolate; }
 .project-card::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none; opacity: 0; background: radial-gradient(340px circle at var(--spotlight-x,50%) var(--spotlight-y,50%),color-mix(in srgb, var(--accent) 11%, transparent),transparent 70%); transition: opacity .25s ease; }
@@ -258,29 +257,24 @@ body:has(dialog:modal) .resume-dialog :disabled { cursor: wait !important; }
 .email-address svg { flex-shrink: 0; color: var(--muted); }
 .email-address:hover, .email-address:hover svg { color: var(--accent-text); }
 
-.resume-dialog { position: fixed; inset: 0; margin: auto; width: min(560px, calc(100% - 28px)); max-width: 560px; max-height: min(90dvh, 850px); padding: 0; overflow: auto; color: var(--ink); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: 22px; background: var(--surface); box-shadow: 0 32px 110px rgba(0, 0, 0, .7); }
-.resume-dialog::backdrop { background: color-mix(in srgb, var(--canvas) 78%, transparent); backdrop-filter: blur(6px); }
-.resume-dialog-panel { position: relative; padding: clamp(25px, 6vw, 42px); }
-.resume-dialog-close { position: absolute; top: 17px; right: 17px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; background: rgba(255, 255, 255, .035); color: var(--muted); cursor: pointer; }
-.resume-dialog-close:hover, .resume-dialog-close:focus-visible { color: var(--ink); border-color: color-mix(in srgb, var(--accent) 50%, transparent); outline-offset: 3px; }
-.resume-dialog-eyebrow { margin: 0 48px 11px 0; color: var(--warm-text); text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; font-weight: 800; }
-.resume-dialog h2 { margin: 0 36px 13px 0; color: var(--ink); font-family: var(--font-heading), sans-serif; font-size: clamp(1.8rem, 5vw, 2.45rem); line-height: 1.08; letter-spacing: -.05em; }
-.resume-dialog h2 svg { display: inline-block; vertical-align: -3px; margin-right: 4px; color: var(--accent-text); }
-.resume-dialog-intro { margin: 0 0 23px; color: var(--muted); font-size: .98rem; line-height: 1.6; }
-.resume-choice { display: flex; width: 100%; align-items: center; gap: 14px; margin-top: 12px; padding: 17px; text-align: left; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); background: rgba(255, 255, 255, .025); cursor: pointer; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
-.resume-choice:hover:not(:disabled), .resume-choice:focus-visible { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
-.resume-choice:disabled { opacity: .72; cursor: wait; }
-.resume-choice-paid { border-color: rgb(252 115 77 / 55%); background: linear-gradient(110deg, #2e2133, var(--surface)); }
-.resume-choice-icon { flex: 0 0 43px; display: grid; place-items: center; width: 43px; height: 43px; border: 1px solid rgb(252 115 77 / 42%); border-radius: 13px; color: var(--warm-text); background: rgb(252 115 77 / 10%); }
-.resume-choice-copy { display: grid; flex: 1; gap: 4px; }.resume-choice-copy strong { font-size: .97rem; }.resume-choice-copy span { color: var(--body-text); font-size: .82rem; line-height: 1.4; }.resume-choice-copy small { color: var(--muted); font-size: .72rem; line-height: 1.35; }
-.resume-form { display: grid; gap: 13px; }.resume-form label { display: grid; gap: 6px; color: var(--ink-soft); font-size: .83rem; font-weight: 700; }.resume-form input, .resume-form textarea { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid var(--field-border); border-radius: 10px; outline: none; color: var(--ink); background: var(--surface-strong); font: inherit; font-weight: 400; }.resume-form input:focus, .resume-form textarea:focus { border-color: var(--accent-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }.resume-form input:disabled, .resume-form textarea:disabled { opacity: .65; }.resume-form textarea { resize: vertical; }
-.resume-form ::placeholder { color: var(--muted); opacity: 1; }
-.resume-honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
-.resume-submit { display: inline-flex; min-height: 48px; width: 100%; align-items: center; justify-content: center; gap: 9px; padding: 12px 17px; border: 0; border-radius: 999px; color: var(--action-ink); background: var(--warm); box-shadow: var(--action-glow); font-weight: 800; text-align: center; cursor: pointer; }.resume-submit:hover:not(:disabled) { background: var(--warm-hover); }.resume-submit:disabled { opacity: .7; cursor: wait; }.resume-download { text-decoration: none; }
-.resume-dialog-error { margin: 11px 0 0; padding: 10px 12px; border: 1px solid rgba(255, 126, 126, .25); border-radius: 10px; color: #ffbaba; background: rgba(142, 42, 42, .12); font-size: .83rem; line-height: 1.5; }.resume-dialog-notice { margin: 0 0 14px; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }.resume-fine-print { margin: 15px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }.resume-back, .resume-text-button { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 20px; padding: 0; border: 0; color: var(--accent-text); background: transparent; font-size: .81rem; font-weight: 700; cursor: pointer; }.resume-text-button { margin: 13px 0 0; }.resume-back:hover, .resume-text-button:hover:not(:disabled) { color: white; text-decoration: underline; text-underline-offset: 3px; }.resume-text-button:disabled { color: var(--muted); cursor: default; }.resume-spinner { animation: resume-spin 1s linear infinite; }
-@keyframes resume-spin { to { transform: rotate(360deg); } }
-.resume-email-access { margin-top: 18px; }
-.resume-countdown { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 16px; margin: 0; border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: 14px; color: var(--accent-text); background: color-mix(in srgb, var(--accent) 7%, transparent); }
-.resume-countdown strong { font-variant-numeric: tabular-nums; }
-@media (max-width: 520px) { .resume-dialog { position: fixed; inset: 0; margin: auto; width: calc(100% - 20px); max-height: 92dvh; border-radius: 17px; }.resume-dialog-panel { padding: 27px 20px; }.resume-choice { align-items: flex-start; padding: 14px; gap: 10px; }.resume-choice-icon { flex-basis: 38px; width: 38px; height: 38px; }.resume-choice-copy small { font-size: .69rem; } }
-@media (prefers-reduced-motion: reduce) { .resume-choice, .resume-spinner { transition: none; animation: none; } }
+
+.email-draft-dialog { position: fixed; inset: 0; margin: auto; width: min(560px, calc(100% - 28px)); max-height: 90dvh; padding: 0; overflow-y: auto; border: 1px solid var(--line); border-radius: 22px; color: var(--ink); background: var(--surface); box-shadow: var(--shadow); }
+.email-draft-dialog::backdrop { background: rgb(3 6 16 / 80%); backdrop-filter: blur(6px); }
+.email-draft-panel { position: relative; padding: clamp(24px, 6vw, 40px); }
+.email-draft-close { position: absolute; top: 16px; right: 16px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: transparent; cursor: pointer; }
+.email-draft-close:hover { color: var(--ink); border-color: var(--accent-text); }
+.email-draft-eyebrow { margin: 0 44px 10px 0; color: var(--warm-text); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.email-draft-dialog h2 { margin: 0 36px 14px 0; font-size: clamp(1.7rem, 5vw, 2.2rem); line-height: 1.15; }
+.email-draft-description { margin-bottom: 24px; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.email-draft-form { display: grid; gap: 14px; }
+.email-draft-form label { display: grid; gap: 6px; color: var(--ink-soft); font-size: .85rem; font-weight: 700; }
+.email-draft-form input, .email-draft-form textarea { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid var(--field-border); border-radius: 10px; color: var(--ink); background: var(--surface-strong); font: inherit; font-weight: 400; }
+.email-draft-form textarea { resize: vertical; }
+.email-draft-form ::placeholder { color: var(--muted); opacity: 1; }
+.email-draft-form .button-primary { width: 100%; margin-top: 4px; cursor: pointer; }
+.email-draft-note, .email-draft-status { margin-top: 14px; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.email-draft-status { color: var(--accent-text); }
+body:has(.email-draft-dialog:modal) { overflow: hidden; }
+body:has(.email-draft-dialog:modal) .email-draft-dialog, body:has(.email-draft-dialog:modal) .email-draft-dialog * { cursor: auto !important; }
+body:has(.email-draft-dialog:modal) .email-draft-dialog button { cursor: pointer !important; }
+body:has(.email-draft-dialog:modal) .email-draft-dialog input, body:has(.email-draft-dialog:modal) .email-draft-dialog textarea { cursor: text !important; }
