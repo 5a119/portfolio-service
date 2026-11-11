@@ -23,7 +23,7 @@ export const experience = [
     company: 'Blackhawk Network', role: 'Software Engineer II',
     dates: 'July 2022 – Present', location: 'Pleasanton, CA',
     bullets: [
-      'Designed and delivered an order management platform processing more than 40,000 orders a day across distributed services on AWS.',
+      'Designed and delivered an order management platform processing 100K+ orders a day across distributed services on AWS.',
       'Containerized services with Docker and deployed them to AWS ECS through Jenkins pipelines, using CloudFormation to provision infrastructure.',
       'Built a reusable Java library that turns RSQL queries into MongoDB Atlas Search pipelines, so other services can share the same search logic.',
       'Connected order workflows with AWS EventBridge, SNS, and SQS to send notifications as orders move through each stage.',
